@@ -138,6 +138,38 @@ IGL_INLINE void igl::viewer::ViewerData::set_colors(const Eigen::MatrixXd &C)
     T.col(3) = C.col(3);
     return T;
   };
+  // temp fix for old viewer data
+  if(V_material_ambient.cols() == 3)
+  {
+    V_material_ambient.conservativeResize(V_material_ambient.rows(),4);
+    V_material_ambient.col(3).fill(1);
+  }
+  if(V_material_diffuse.cols() == 3)
+  {
+    V_material_diffuse.conservativeResize(V_material_diffuse.rows(),4);
+    V_material_diffuse.col(3).fill(1);
+  }
+  if(V_material_specular.cols() == 3)
+  {
+    V_material_specular.conservativeResize(V_material_specular.rows(),4);
+    V_material_specular.col(3).fill(1);
+  }
+  if(F_material_ambient.cols() == 3)
+  {
+    F_material_ambient.conservativeResize(F_material_ambient.rows(),4);
+    F_material_ambient.col(3).fill(1);
+  }
+  if(F_material_diffuse.cols() == 3)
+  {
+    F_material_diffuse.conservativeResize(F_material_diffuse.rows(),4);
+    F_material_diffuse.col(3).fill(1);
+  }
+  if(F_material_specular.cols() == 3)
+  {
+    F_material_specular.conservativeResize(F_material_specular.rows(),4);
+    F_material_specular.col(3).fill(1);
+  }
+
   if (color.rows() == 1)
   {
     for (unsigned i=0;i<V_material_diffuse.rows();++i)

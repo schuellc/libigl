@@ -421,7 +421,8 @@ IGL_INLINE void igl::viewer::OpenGL_state::init()
   "vec3 vector_to_light_eye = light_position_eye - position_eye;"
   "vec3 direction_to_light_eye = normalize (vector_to_light_eye);"
   "float dot_prod = dot (direction_to_light_eye, normal_eye);"
-  "float clamped_dot_prod = max (dot_prod, 0.0);"
+  "float clamped_dot_prod = max(dot_prod, 0.0);"
+  "clamped_dot_prod = clamped_dot_prod*0.7+0.3;"
   "vec3 Id = Ld * vec3(Kdi) * clamped_dot_prod;"    // Diffuse intensity
 
   "vec3 reflection_eye = reflect (-direction_to_light_eye, normal_eye);"

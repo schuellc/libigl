@@ -132,7 +132,7 @@ IGL_INLINE void igl::viewer::ViewerCore::draw(
     glDisable(GL_DEPTH_TEST);
 
   glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
   /* Bind and potentially refresh mesh/line/point data */
   if (data.dirty)
@@ -456,7 +456,7 @@ IGL_INLINE igl::viewer::ViewerCore::ViewerCore()
 
   // Default lights settings
   shininess = 35.0f;
-  light_position << 0.0f, -0.30f, -500.0f;
+  light_position << 0.0f, -3000.0f, -5000000.0f;
   lighting_factor = 1.0f; //on
 
   // Global scene transformation

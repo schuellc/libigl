@@ -1130,6 +1130,7 @@ namespace viewer
       glfwSetWindowPos(window,window_position(0),window_position(1));
       glfwSetWindowSize(window,window_size(0),window_size(1));
 #ifdef GLFW_VERSION_HIGHER_THAN_3_1
+      glfwRestoreWindow(window);
       glfwMaximizeWindow(window);
 #endif
     }
@@ -1282,9 +1283,6 @@ namespace viewer
 
     // set camera zoom and position to show mesh centered
     core.align_camera_center(data);
-
-    // set appropriate light position
-    core.light_position *= core.camera_zoom;
 
     // Initialize IGL viewer
     init();
