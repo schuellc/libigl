@@ -80,7 +80,7 @@ namespace igl
     // Set current face and edge index
     IGL_INLINE bool init(int faceIndex,int edgeIndex,bool reverse = false)
     {
-      if(state.fi >= 0 && state.fi < F.rows() && state.ei >= 0 && state.ei <= 2)
+      if(faceIndex >= 0 && faceIndex < F.rows() && edgeIndex >= 0 && edgeIndex <= 2)
       {
         state.fi = faceIndex;
         state.ei = edgeIndex;
@@ -228,7 +228,7 @@ namespace igl
       }
       else
       {
-        state.ei = (state.ei+1)%3;
+        state.ei = (state.ei == 2) ? 0 : (state.ei+1);
       }
       HE_ITER_DEBUG("Next halfedge");
     }
@@ -389,9 +389,9 @@ namespace igl
        (state.ei == p2.state.ei) &&
        (state.reverse == p2.state.reverse) &&
        (state.boundary == p2.state.boundary) &&
-       (F   == p2.F) &&
-       (FF  == p2.FF) &&
-       (FFi == p2.FFi)
+       (&F   == &p2.F) &&
+       (&FF  == &p2.FF) &&
+       (&FFi == &p2.FFi)
        );
     }
 
