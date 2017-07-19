@@ -103,8 +103,9 @@ namespace igl
     std::map<std::pair<int,int>,int> cutHalfEdgesPairLinks;
     std::vector<typename DerivedI::Scalar> cutVerexIds;
     std::vector<typename igl::HalfEdgeIterator<DerivedI>::State> cutHalfIter;
-    for(auto c : cuts)
+    for(int ci=0;ci<cuts.size();ci++)
     {
+      auto& c = cuts[ci];
       if(c.size() == 0)
       {
         std::cout << "Empty cut vertex sequence provided!" << std::endl;
@@ -171,7 +172,11 @@ namespace igl
         while(heIter.Vif() != c[i])
         {
           heIter.iterHE();
-          assert(startId != heIter.Vif() && "Provided vertex id cut sequence is not valid!");
+          if(startId == heIter.Vif())
+          {
+            std::cerr << "Provided vertex id cut sequence is not valid: cut " << ci << " / idx " << i << std::endl;
+            return;
+          }
         }
 
         // make edge a boundary

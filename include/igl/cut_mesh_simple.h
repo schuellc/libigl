@@ -72,7 +72,7 @@ namespace igl
                 const std::vector<std::vector<typename DerivedI::Scalar>>& cuts,
                 std::vector<std::vector<typename DerivedI::Scalar>>& cutVertices,
                 std::vector<std::vector<int>>& cutVerticesLink,
-                std::vector<Eigen::Matrix<typename DerivedI::Scalar,Eigen::Dynamic,4,Option>>& cutHalfedges,
+                std::vector<std::vector<typename DerivedI::Scalar>>& cutHalfedges,
                 std::vector<std::vector<int>>& cutHalfedgesLink);
 };
 
