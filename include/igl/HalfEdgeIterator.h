@@ -1,6 +1,8 @@
 // This file is part of libigl, a simple c++ geometry processing library.
 //
 // Copyright (C) 2014 Daniele Panozzo <daniele.panozzo@gmail.com>
+// Heavily edited and extended for halfedge navigation
+// by Christian Schüller <schuellchr@gmail.com>
 //
 // This Source Code Form is subject to the terms of the Mozilla Public License
 // v. 2.0. If a copy of the MPL was not distributed with this file, You can
@@ -31,6 +33,11 @@ namespace igl
   // Each tuple contains information on (face, edge, vertex)
   //    and encoded by (face, edge \in {0,1,2}, bool reverse)
   //
+  // Example initialization:
+  //   MatX3I FF,FFi;
+  //   igl::triangle_triangle_adjacency(F,FF,FFi);
+  //   igl::HalfEdgeIterator<MatX3I> heIter(F,FF,FFi,0,0);
+  //
   // Inputs:
   //    F #F by 3 list of "faces"
   //    FF #F by 3 list of triangle-triangle adjacency.
@@ -47,26 +54,82 @@ namespace igl
   class HalfEdgeIterator
   {
   public:
-    // Init the HalfEdgeIterator by specifying Face,Edge Index and Orientation
+	struct State
+    {
+      int ei;
+      int fi;
+      bool reverse;
+      bool boundary;
+    };
+  
+	// Init the HalfEdgeIterator by specifying Face, Edge Index and Orientation
     IGL_INLINE HalfEdgeIterator(
-        const Eigen::PlainObjectBase<DerivedF>& _F,
-        const Eigen::PlainObjectBase<DerivedFF>& _FF,
-        const Eigen::PlainObjectBase<DerivedFFi>& _FFi,
-        int _fi,
-        int _ei,
-        bool _reverse = false
-        );
+      const Eigen::PlainObjectBase<DerivedF>& _F,
+      const Eigen::PlainObjectBase<DerivedF>& _FF,
+      const Eigen::PlainObjectBase<DerivedF>& _FFi,
+      int _fi,
+      int _ei,
+      bool _reverse = false
+    );
+	
+	// Init the HalfEdgeIterator by another
+    IGL_INLINE HalfEdgeIterator(
+      const Eigen::PlainObjectBase<DerivedF>& _F,
+      const Eigen::PlainObjectBase<DerivedF>& _FF,
+      const Eigen::PlainObjectBase<DerivedF>& _FFi,
+      const HalfEdgeIterator& other)
+    );
+	
+	// Set current face and edge index
+    IGL_INLINE bool init(
+	  int faceIndex,
+	  int edgeIndex,
+	  bool reverse = false
+	);
+	
+	IGL_INLINE State getState() const;
+	IGL_INLINE void setState(const State& state);
 
     // Change Face
-    IGL_INLINE void flipF();
+    IGL_INLINE bool flipF();
 
     // Change Edge
     IGL_INLINE void flipE();
+	
+	// Change to other Halfedge
+    // Like flipF() but also works for boundary edges
+    IGL_INLINE void flipHE();
 
     // Change Vertex
     IGL_INLINE void flipV();
+	
+	// Return if vertex is on boundary
+    IGL_INLINE bool isBoundaryV() const;
+	
+	// Return if edge is on boundary
+    IGL_INLINE bool isBoundaryE() const;
+	
+	// Return if halfedge is on boundary
+    IGL_INLINE bool isBoundaryHE() const;
+	
+	// Todo
+    //IGL_INLINE int isBoundaryF() const;
+	
+	// Deprecated: only for backward compatibility functions above
+	IGL_INLINE bool isBorder();
+	
+	// Todo
+    //IGL_INLINE std::vector<int> neighbourV() const;
 
-    IGL_INLINE bool isBorder();
+    // Todo
+    //IGL_INLINE std::vector<int> bool neighbourF() const;
+
+	// Move to next halfedge such that Vi0 becomes Vi1
+    // Can also be used to travel along boundary halfedges
+    IGL_INLINE void nextHE();
+	
+	// Returns the next halfedge around the current vertex v, including boundaries
+    IGL_INLINE void iterHE()
 
     /*!
      * Returns the next edge skipping the border
@@ -83,21 +146,53 @@ namespace igl
      */
     IGL_INLINE bool NextFE();
 
+	// Get inner triangle vertex index
+    IGL_INLINE int Vii() const;
+	
     // Get vertex index
-    IGL_INLINE int Vi();
-
-    // Get face index
-    IGL_INLINE int Fi();
+    IGL_INLINE int Vi() const;
+	
+	// Get inner triangle flipped vertex index
+    IGL_INLINE int Viif() const;
+	
+	// Get flipped vertex index
+    IGL_INLINE int Vif() const;
+	
+	// Get inner triangle vertex index at halfedge start
+    IGL_INLINE int Vii0() const;
+	
+	// Get vertex index at halfedge start
+    IGL_INLINE int Vi0() const;
+	
+	// Get inner triangle vertex index at halfedge end
+    IGL_INLINE int Vii1() const;
+	
+	// Get vertex index at halfedge end
+    IGL_INLINE int Vi1() const;
 
     // Get edge index
-    IGL_INLINE int Ei();
+    IGL_INLINE int Ei() const;
+	
+	// Get flipped edge index
+    IGL_INLINE int Eif() const;
+	
+	// Get flipped halfedge index
+    IGL_INLINE int HEi() const;
+	
+	// Get face index
+    IGL_INLINE int Fi() const;
+	
+	// Get flipped face index
+    IGL_INLINE int Fif() const;
+	
+	IGL_INLINE HalfEdgeIterator& operator=(const HalfEdgeIterator& p2);
 
-    IGL_INLINE bool operator==(HalfEdgeIterator& p2);
-
+	IGL_INLINE bool operator==(HalfEdgeIterator& p2) const;
+	
+	IGL_INLINE bool operator!=(HalfEdgeIterator& p2) const;
+	
   private:
-    int fi;
-    int ei;
-    bool reverse;
+	State state;
 
     // All the same type? This is likely to break.
     const Eigen::PlainObjectBase<DerivedF> & F;
